@@ -13,19 +13,29 @@ public:
         if(s.size() == 0 || t.size() > s.size())
             return "";
         int minlen = INT_MAX;
-        string smin;
+        // string smin;
+        auto smin = -1;
         // t can have a number of duplicate characters 
-        unordered_map<char, int> map;
+        //unordered_map<char, int> map;
+        vector<int> map(256, INT_MAX);
+        // No of unique characters in t
+        int nUnique = 0;
         for(auto ch: t){
+            if(map[ch] == INT_MAX){
+                ++nUnique;
+                map[ch] = 1;
+                continue;
+            } 
             map[ch]++;
         }
         // No of unique characters in t
-        int nUnique = map.size();
+        // int nUnique = map.size();
         int i = 0, j = -1;
         int size = s.size();
         while(j < size){
             ++j;
-            if(map.find(s[j]) == map.end()){
+            // if(map.find(s[j]) == map.end()){
+            if(map[s[j]] == INT_MAX){
                 continue;
             }
             map[s[j]]--;
@@ -35,20 +45,23 @@ public:
                 // Valid window having all required no of unique characters
                 if(j-i+1 < minlen){
                     minlen = j-i+1;
-                    smin = s.substr(i, minlen);
+                    // smin = s.substr(i, minlen);
+                    smin = i;
                 }
 
                 // Decrease window till possible to maintain invariant
                 // If element at start is not in map -> not required unique character
                 // While map[s[i]] is not > 0 -> I can remove this 
                 // i < j always true
-                while(map.find(s[i]) == map.end() || map[s[i]] < 0){
-                    if(map.find(s[i]) != map.end()) 
+                // while(map.find(s[i]) == map.end() || map[s[i]] < 0){
+                while(map[s[i]] == INT_MAX || map[s[i]] < 0){
+                    if(map[s[i]] != INT_MAX) 
                         map[s[i]]++;
                     ++i;
                     if(j-i+1 < minlen){
                         minlen = j-i+1;
-                        smin = s.substr(i, minlen);
+                        // smin = s.substr(i, minlen);
+                        smin = i;
                     }
                 }
 
@@ -60,8 +73,8 @@ public:
                 } 
             }
         } 
-        return smin;
-    }
+        return smin == -1 ? "" : s.substr(smin, minlen);
+    };
 };
 // @lc code=end
 
